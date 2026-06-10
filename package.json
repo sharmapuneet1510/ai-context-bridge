@@ -1,0 +1,66 @@
+{
+  "name": "ai-context-bridge",
+  "displayName": "ContextBridge",
+  "description": "Capture, compress, and export AI coding context across providers",
+  "version": "0.1.0",
+  "publisher": "puneet",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onCommand:contextbridge.createContextPackage",
+    "onCommand:contextbridge.exportForClaude",
+    "onCommand:contextbridge.exportForCodex",
+    "onCommand:contextbridge.exportForCursor",
+    "onCommand:contextbridge.openContextFile",
+    "onCommand:contextbridge.refreshGitContext"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "contextbridge.createContextPackage",
+        "title": "ContextBridge: Create Context Package"
+      },
+      {
+        "command": "contextbridge.exportForClaude",
+        "title": "ContextBridge: Export for Claude"
+      },
+      {
+        "command": "contextbridge.exportForCodex",
+        "title": "ContextBridge: Export for Codex"
+      },
+      {
+        "command": "contextbridge.exportForCursor",
+        "title": "ContextBridge: Export for Cursor"
+      },
+      {
+        "command": "contextbridge.openContextFile",
+        "title": "ContextBridge: Open Context File"
+      },
+      {
+        "command": "contextbridge.refreshGitContext",
+        "title": "ContextBridge: Refresh Git Context"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.0.0",
+    "vsce": "^2.15.0",
+    "@types/jest": "^29.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0"
+  },
+  "dependencies": {
+    "yaml": "^2.4.0"
+  }
+}
