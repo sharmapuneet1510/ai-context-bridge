@@ -13,8 +13,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(registerExportForCursorCommand());
   context.subscriptions.push(registerOpenContextFileCommand());
   context.subscriptions.push(registerRefreshGitContextCommand());
-
-  vscode.window.showInformationMessage("ContextBridge activated");
 }
 
 export function deactivate() {}
