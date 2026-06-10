@@ -1,7 +1,7 @@
 import { GitContext } from "../models/aiContext";
 import { executeCommand } from "../utils/fsUtils";
 
-export async function collectGitContext(workspacePath: string): Promise<GitContext> {
+export function collectGitContext(workspacePath: string): GitContext {
   const context: GitContext = {
     modifiedFiles: [],
     addedFiles: [],
@@ -24,12 +24,18 @@ export async function collectGitContext(workspacePath: string): Promise<GitConte
   if (statusResult.exitCode === 0) {
     const lines = statusResult.stdout.split("\n").filter((l) => l.trim());
     lines.forEach((line) => {
+      if (line.length < 2) return; // Safety check
       const status = line.substring(0, 2);
       const file = line.substring(3);
       if (status[0] === "M" || status[1] === "M") context.modifiedFiles.push(file);
       if (status[0] === "A" || status[1] === "A") context.addedFiles.push(file);
       if (status[0] === "D" || status[1] === "D") context.deletedFiles.push(file);
-      if (status[0] === "R") context.renamedFiles.push(file);
+      if (status[0] === "R") {
+        // Git format: "oldname -> newname"
+        const parts = file.split(" -> ");
+        const newName = parts[1]?.trim() || file;
+        context.renamedFiles.push(newName);
+      }
     });
   }
 
