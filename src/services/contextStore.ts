@@ -1,4 +1,5 @@
-import * as fs from "fs";
+import * as fs from "fs/promises";
+import * as fsSync from "fs";
 import { AIContext } from "../models/aiContext";
 import { renderYaml } from "./yamlRenderer";
 import { renderMarkdown } from "./markdownRenderer";
@@ -24,12 +25,12 @@ export async function loadContext(
   workspacePath: string
 ): Promise<AIContext | null> {
   const yamlPath = getContextYamlPath(workspacePath);
-  if (!fs.existsSync(yamlPath)) {
+  if (!fsSync.existsSync(yamlPath)) {
     return null;
   }
 
   try {
-    const content = fs.readFileSync(yamlPath, "utf-8");
+    const content = await fs.readFile(yamlPath, "utf-8");
     const { parse } = await import("yaml");
     const context = parse(content) as AIContext;
     return context;
@@ -49,8 +50,13 @@ export async function saveContext(context: AIContext): Promise<void> {
   const yaml = renderYaml(context);
   const markdown = renderMarkdown(context);
 
-  fs.writeFileSync(yamlPath, yaml, "utf-8");
-  fs.writeFileSync(markdownPath, markdown, "utf-8");
+  try {
+    await fs.writeFile(yamlPath, yaml, "utf-8");
+    await fs.writeFile(markdownPath, markdown, "utf-8");
+  } catch (error) {
+    console.error("Failed to save context:", error);
+    throw error;
+  }
 }
 
 export async function writeExport(
@@ -58,7 +64,17 @@ export async function writeExport(
   filename: string,
   content: string
 ): Promise<void> {
+  if (filename.includes("..") || filename.includes("/") || filename.includes("\\")) {
+    throw new Error("Invalid filename: path traversal not allowed");
+  }
+
   await ensureContextBridgeFolder(workspacePath);
   const exportPath = getExportPath(workspacePath, filename);
-  fs.writeFileSync(exportPath, content, "utf-8");
+
+  try {
+    await fs.writeFile(exportPath, content, "utf-8");
+  } catch (error) {
+    console.error("Failed to write export:", error);
+    throw error;
+  }
 }
